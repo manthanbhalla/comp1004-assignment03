@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,105 +18,121 @@ using System.Windows.Forms;
 /// </summary>
 namespace Sharp_Movie_Bonanza
 {
-    partial class OrderAboutBox : Form
+    public partial class OrderForm : Form
     {
-        public OrderAboutBox()
+        public SelectionForm previousForm;
+
+        public OrderForm()
         {
             InitializeComponent();
-            this.Text = String.Format("About {0}", AssemblyTitle);
-            this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
-            this.labelCopyright.Text = AssemblyCopyright;
         }
-
-        #region Assembly Attribute Accessors
-
-        public string AssemblyTitle
-        {
-            get
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-                if (attributes.Length > 0)
-                {
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                    if (titleAttribute.Title != "")
-                    {
-                        return titleAttribute.Title;
-                    }
-                }
-                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
-            }
-        }
-
-        public string AssemblyVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
-
-        public string AssemblyDescription
-        {
-            get
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
-            }
-        }
-
-        public string AssemblyProduct
-        {
-            get
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyProductAttribute)attributes[0]).Product;
-            }
-        }
-
-        public string AssemblyCopyright
-        {
-            get
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
-            }
-        }
-
-        public string AssemblyCompany
-        {
-            get
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
-            }
-        }
-        #endregion
 
         /// <summary>
-        /// returns to the OrderForm when ok button is clicked
+        /// retrieves selected movie, displays its details and calculates costs
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void okButton_Click(object sender, EventArgs e)
+        private void OrderForm_Load(object sender, EventArgs e)
         {
+            String[] movie = Program.movie;
+            TitleTextBox.Text = movie[0];
+            CategoryTextBox.Text = movie[1];
+            CostTextBox.Text = movie[2];
+            string imageString = Regex.Replace(TitleTextBox.Text, @"\s+", "");
+            YourSelectionPictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject(imageString);
+            YourSelectionPictureBox.Refresh();
+            CalcTotal();
+        }
+
+        /// <summary>
+        /// saves the finalized cost and opens the Stream form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StreamButton_Click(object sender, EventArgs e)
+        {
+            String[] movie = Program.movie;
+            movie.SetValue(GrandTotalTextBox.Text, 2);
+
+            this.Hide();
+            StreamForm StreamForm = new StreamForm();
+            StreamForm.Show();
+        }
+
+        /// <summary>
+        /// returns to selection form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BackButton_Click(object sender, EventArgs e)
+        {
+            this.previousForm.Show();
             this.Close();
+        }
+
+        /// <summary>
+        /// closes application if user cancels order
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+
+     
+
+        /// <summary>
+        /// adds in or removes DVD price when checkbox changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DVDCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            DVDLabel.Visible = !DVDLabel.Visible;
+            DVDTextBox.Visible = DVDLabel.Visible;
+            CalcTotal();
+        }
+
+        /// <summary>
+        /// calculates and displays text for subtotal, sales tax and grand total
+        /// </summary>
+        private void CalcTotal()
+        {
+            double subtotal = Double.Parse(CostTextBox.Text.Substring(1));
+            if (DVDTextBox.Visible)
+            {
+                subtotal += 10;
+            }
+            SubtotalTextBox.Text = subtotal.ToString("C2");
+
+            double salesTax = subtotal * 0.13;
+            SalesTaxTextBox.Text = salesTax.ToString("C2");
+
+            double grandTotal = subtotal + salesTax;
+            GrandTotalTextBox.Text = grandTotal.ToString("C2");
+        }
+
+        /// <summary>
+        /// opens and locks focus on an about form without closing this form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OrderAboutBox OrderAboutBox = new OrderAboutBox();
+            OrderAboutBox.ShowDialog();
+        }
+
+        /// <summary>
+        /// opens up a print preview of the current form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void printToolStripItem_Click(object sender, EventArgs e)
+        {
+            OrderPrintPreviewDialog.ShowDialog();
         }
     }
 }
