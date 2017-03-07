@@ -45,6 +45,7 @@
             this.CategoryLabel = new System.Windows.Forms.Label();
             this.TitleTextBox = new System.Windows.Forms.TextBox();
             this.YourOrderGroupBox = new System.Windows.Forms.GroupBox();
+            this.DividerLabel = new System.Windows.Forms.Label();
             this.DVDCheckBox = new System.Windows.Forms.CheckBox();
             this.DVDTextBox = new System.Windows.Forms.TextBox();
             this.DVDLabel = new System.Windows.Forms.Label();
@@ -58,7 +59,6 @@
             this.CostLabel = new System.Windows.Forms.Label();
             this.BackButton = new System.Windows.Forms.Button();
             this.OrderPrintPreviewDialog = new System.Windows.Forms.PrintPreviewDialog();
-            this.DividerLabel = new System.Windows.Forms.Label();
             this.OrderMenuStrip.SuspendLayout();
             this.MovieSelectedGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.YourSelectionPictureBox)).BeginInit();
@@ -221,14 +221,22 @@
             this.YourOrderGroupBox.TabStop = false;
             this.YourOrderGroupBox.Text = "Your Order";
             // 
+            // DividerLabel
+            // 
+            this.DividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DividerLabel.Location = new System.Drawing.Point(9, 100);
+            this.DividerLabel.Name = "DividerLabel";
+            this.DividerLabel.Size = new System.Drawing.Size(174, 2);
+            this.DividerLabel.TabIndex = 17;
+            // 
             // DVDCheckBox
             // 
             this.DVDCheckBox.AutoSize = true;
             this.DVDCheckBox.Location = new System.Drawing.Point(10, 190);
             this.DVDCheckBox.Name = "DVDCheckBox";
-            this.DVDCheckBox.Size = new System.Drawing.Size(180, 17);
+            this.DVDCheckBox.Size = new System.Drawing.Size(206, 17);
             this.DVDCheckBox.TabIndex = 16;
-            this.DVDCheckBox.Text = "Order the DVD for only $10 extra";
+            this.DVDCheckBox.Text = "Order the DVD for only extra $10 extra";
             this.DVDCheckBox.UseVisualStyleBackColor = true;
             this.DVDCheckBox.CheckedChanged += new System.EventHandler(this.DVDCheckBox_CheckedChanged);
             // 
@@ -344,14 +352,6 @@
             this.OrderPrintPreviewDialog.Name = "OrderPrintPreviewDialog";
             this.OrderPrintPreviewDialog.ShowIcon = false;
             this.OrderPrintPreviewDialog.Visible = false;
-            // 
-            // DividerLabel
-            // 
-            this.DividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.DividerLabel.Location = new System.Drawing.Point(9, 100);
-            this.DividerLabel.Name = "DividerLabel";
-            this.DividerLabel.Size = new System.Drawing.Size(174, 2);
-            this.DividerLabel.TabIndex = 17;
             // 
             // OrderForm
             // 
